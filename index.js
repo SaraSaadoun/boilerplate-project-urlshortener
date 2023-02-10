@@ -5,9 +5,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const dns = require("dns");
-const urll = require("url");
 const Url = require("./models/url");
-const path = require("path");
 // Basic Configuration
 const port = 3000;
 const dbURI =
@@ -45,9 +43,7 @@ app.get("/api/shorturl/:url", (req, res) => {
 });
 app.post("/api/shorturl", (req, res) => {
   //check if the url valid or not
-  // console.log(req.body.);
-  // urlObj = ne(req.body.url);
-  // console.log(urlObj);
+
   dns.lookup(req.body.url, (err, result) => {
     try {
       const urlValidate = new URL(req.body.url);

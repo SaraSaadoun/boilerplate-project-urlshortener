@@ -13,10 +13,8 @@
     "dns": "^0.2.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "mongoose": "^6.9.1",
-    "node-dns": "^0.1.0",
-    "path": "^0.12.7"
-  },
+    "mongoose": "^6.9.1"
+    },
   "license": "MIT",
   "devDependencies": {
     "nodemon": "^2.0.4"
