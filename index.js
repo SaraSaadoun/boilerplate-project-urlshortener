@@ -35,8 +35,14 @@ app.listen(port, function () {
 });
 app.get("/api/shorturl/:url", (req, res) => {
   url = req.params.url;
+  Url.count({ _id: url }, (err, count) => {
+    if (count == 0) {
+      res.json({ error: "invalid url" });
+      return;
+    }
+  });
   Url.findById(url).then((result) => {
-    const fullUrl = "https://" + result.original_url;
+    const fullUrl = result.original_url;
     console.log(fullUrl);
     res.redirect(302, fullUrl);
   });
@@ -54,7 +60,8 @@ app.post("/api/shorturl", (req, res) => {
 
     console.log("valid url", result);
     Url.findOne({ original_url: req.body.url }, (err, result) => {
-      if (err) console.log(err);
+      if (err || !req.body.url.startsWith("http"))
+        res.json({ error: "invalid url" });
       else if (result) {
         console.log("found");
         res.json({
