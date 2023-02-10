@@ -4,11 +4,12 @@ const cors = require("cors");
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const dns = require("node-dns");
+const dns = require("dns");
+const urll = require("url");
 const Url = require("./models/url");
 const path = require("path");
 // Basic Configuration
-const port = process.env.PORT || 3000;
+const port = 3000;
 const dbURI =
   "mongodb+srv://test-user:test1234@cluster0.gr6xp1u.mongodb.net/url-db?retryWrites=true&w=majority";
 mongoose.set("strictQuery", true); //to supress the warning appeared
@@ -44,39 +45,43 @@ app.get("/api/shorturl/:url", (req, res) => {
 });
 app.post("/api/shorturl", (req, res) => {
   //check if the url valid or not
+  // console.log(req.body.);
+  // urlObj = ne(req.body.url);
+  // console.log(urlObj);
   dns.lookup(req.body.url, (err, result) => {
-    if (err) {
-      console.log("invalid");
+    try {
+      const urlValidate = new URL(req.body.url);
+    } catch {
       res.json({ error: "invalid url" });
       return;
-    } else {
-      console.log("valid url");
-      Url.findOne({ original_url: req.body.url }, (err, result) => {
-        if (err) console.log(err);
-        else if (result) {
-          console.log("found");
-          res.json({
-            original_url: result.original_url,
-            short_url: result._id,
-          });
-        } else {
-          console.log("not found");
-          const url = new Url({ original_url: req.body.url });
-          url
-            .save()
-            .then((result) => {
-              console.log("saved to db");
-              //send ans
-              res.json({
-                original_url: result.original_url,
-                short_url: result._id,
-              });
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-      });
     }
+
+    console.log("valid url", result);
+    Url.findOne({ original_url: req.body.url }, (err, result) => {
+      if (err) console.log(err);
+      else if (result) {
+        console.log("found");
+        res.json({
+          original_url: result.original_url,
+          short_url: result._id,
+        });
+      } else {
+        console.log("not found");
+        const url = new Url({ original_url: req.body.url });
+        url
+          .save()
+          .then((result) => {
+            console.log("saved to db");
+            //send ans
+            res.json({
+              original_url: result.original_url,
+              short_url: result._id,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    });
   });
 });
